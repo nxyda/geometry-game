@@ -1,7 +1,6 @@
 import pygame
 import random
 
-# Inicjalizacja Pygame
 pygame.init()
 
 player_image_1 = pygame.image.load("square_1.png")
@@ -14,23 +13,19 @@ obstacle_top = pygame.image.load("obstacle_top.png")
 
 background_image = pygame.image.load("background.png")
 
-# Ustalamy szerokość i wysokość ekranu
 screen_width = 800
 screen_height = 400
 screen = pygame.display.set_mode((screen_width, screen_height))
 pygame.display.set_caption("Pygame Platformer")
 
-# Definicja kolorów
 background_color = (32, 26, 35)
 cube_color = (141, 170, 157)
 triangle_color = (251, 245, 243)
 ground_color = (46, 37, 50)
 text_color = (255, 255, 255)
 
-# Utworzenie obiektu zegara do kontrolowania ilości klatek na sekundę
 clock = pygame.time.Clock()
 
-# Inicjalizacja zmiennych
 obstacles = []
 obstacles_top = []
 score = 0
@@ -51,12 +46,11 @@ square = {
     'x_velocity': 0,
     'y': screen_height - 32 - 50,
     'y_velocity': 0,
-    'image': player_image_1  # Dodaj ten klucz i przypisz obrazek gracza
+    'image': player_image_1
 }
 
 
 
-# Listy dostępnych wartości opóźnienia
 obstacle_delays = [800, 1000, 1200, 1400]
 obstacle_delays_1 = [800, 1000, 1200]
 obstacle_delays_2 = [800, 1000]
@@ -67,14 +61,12 @@ obstacle_top_delays_1 = [800,1000, 1200]
 obstacle_top_delays_2 = [800, 1000]
 obstacle_top_delays_3 = [800]
 
-# Funkcja do generowania przeszkód
 def generate_obstacle():
     global obstacles, score
-    ob_x_coord = screen_width  # Pojedynczy trójkąt generuje się na końcu ekranu
+    ob_x_coord = screen_width 
     height = 50
     obstacles.append((ob_x_coord, height))
 
-    # Wybór listy opóźnień w zależności od punktów zdobytych przez gracza
     if score < 150:
         obstacle_delays_list = obstacle_delays
     elif score < 300:
@@ -87,12 +79,11 @@ def generate_obstacle():
     random_delay = random.choice(obstacle_delays_list)
     return random_delay
 
-# Funkcja do przesuwania przeszkód w lewo
 def move_obstacles():
     global obstacles, score
     new_obstacles = []
     for (ob_x_coord, height) in obstacles:
-        ob_x_coord -= 5 + (score // 100) * 0.15  # Zwiększamy prędkość o 0.5 co 200 punktów
+        ob_x_coord -= 5 + (score // 100) * 0.15
         if ob_x_coord + 20 > 0:
             new_obstacles.append((ob_x_coord, height))
     obstacles = new_obstacles
@@ -119,13 +110,11 @@ def move_obstacles_top():
   global obstacles_top, score
   new_obstacles_top = []
   for (ob_x_coord, height_top) in obstacles_top:
-    ob_x_coord -= 5 + (score // 100) * 0.15  # Zwiększamy prędkość o 0.5 co 200 punktów
+    ob_x_coord -= 5 + (score // 100) * 0.15
     if ob_x_coord + 20 > 0:
       new_obstacles_top.append((ob_x_coord, height_top))
   obstacles_top = new_obstacles_top
   
-
-# Funkcja sprawdzająca kolizję między kwadratem a trójkątami
 def check_collision():
     global square, obstacles, obstacles_top, game_over
     square_rect = pygame.Rect(square['x'], square['y'], square['width'], square['height'])
@@ -145,8 +134,6 @@ def check_collision():
             game_over = True
 
 
-
-# Funkcja do rozpoczęcia nowej gry
 def new_game():
     global obstacles, score, start_time, game_over, counting_score
     obstacles = []
@@ -155,27 +142,21 @@ def new_game():
     game_over = False
     counting_score = True
 
-# Funkcja do naliczania punktów za czas przeżycia
 def calculate_score():
     global score, start_time, counting_score
     if counting_score:
         current_time = pygame.time.get_ticks()
-        elapsed_seconds = (current_time - start_time) // 100  # Czas w sekundach
+        elapsed_seconds = (current_time - start_time) // 100
         score = elapsed_seconds
 
-# Funkcja do rysowania punktu i kwadratu gracza
 def draw_player():
     global square, player_image_1, player_image_2
 
     if square['jumping'] or square['y'] < screen_height - 100:
-        # Jeśli gracz skacze lub jest wyżej niż 100 pikseli od dołu, użyj obrazka player_image_2
         screen.blit(player_image_2, (square['x'], square['y']))
     else:
-        # W przeciwnym razie użyj obrazka player_image_1
         screen.blit(player_image_1, (square['x'], square['y']))
 
-# Funkcja do rysowania przeszkód
-# Funkcja do rysowania przeszkód
 def draw_obstacles():
   for (ob_x_coord, height) in obstacles:
     obstacle_image = pygame.image.load("obstacle_1.png")
@@ -190,11 +171,8 @@ def draw_obstacles_top():
     obstacle_rect.topleft = (ob_x_coord, screen_height - height_top)
     screen.blit(obstacle_image, obstacle_rect)
 
-# Rozpoczęcie nowej gry na początku
 new_game()
 
-# Główna pętla gry
-# Główna pętla gry
 running = True
 obstacle_delay = 0 
 obstacle_top_delay = 0
@@ -219,51 +197,48 @@ while running:
         square['y'] = screen_height - 16 - square['height']
         square['y_velocity'] = 0
 
-    # Zliczanie czasu
     current_time = pygame.time.get_ticks()
     current_time_2 = pygame.time.get_ticks()
   
     if current_time - obstacle_timer > obstacle_delay:
       test = random.randint(1,2)
       if test == 1:
-        obstacle_delay = generate_obstacle()  # Pobieramy losowe opóźnienie
+        obstacle_delay = generate_obstacle() 
       elif test == 2:
         obstacle_top_delay = generate_obstacles_top()
       obstacle_timer = current_time
 
-  
-    # Ruch przeszkód
+
     move_obstacles()
 
     move_obstacles_top()
   
-    # Obliczanie punktów za czas przeżycia
+
     calculate_score()
 
-    # Sprawdzanie kolizji
+
     check_collision()
 
-    # Draw the background
+
     screen.fill(background_color)
 
-    # Draw the ground
+
     pygame.draw.line(screen, ground_color, (0, screen_height - 15), (screen_width, screen_height - 15), 30)
 
-    # Draw obstacles
+
     draw_obstacles()
 
     draw_obstacles_top()
 
   
-    # Draw player
+
     draw_player()
 
-    # Wyświetlanie wyniku
+
     score_text = font.render(f"Score: {score}", True, text_color)
     screen.blit(score_text, (screen_width - 150, 20))
 
     if game_over:
-        # Wyświetlanie "GAME OVER" i wyniku
         screen.fill((0, 0, 0))
         counting_score = False
         game_over_text = game_over_font.render("GAME OVER", True, text_color)
